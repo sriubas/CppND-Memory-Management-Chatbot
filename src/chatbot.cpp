@@ -32,48 +32,11 @@ ChatBot::ChatBot(std::string filename)
 ChatBot::~ChatBot()
 {
     std::cout << "ChatBot Destructor" << std::endl;
-
-    // deallocate heap memory
-    // if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
-    // {
-    //     delete _image;
-    //     _image = NULL;
-    // }
 }
 
 //// STUDENT CODE
 ////
 
-ChatBot::ChatBot(ChatBot &chatbot)
-{
-    std::cout << "ChatBot Copy Operator" << std::endl;
-
-    _image = std::move(chatbot._image);
-    _currentNode = chatbot._currentNode;
-    _rootNode = chatbot._rootNode;
-    _chatLogic = chatbot._chatLogic;
-    chatbot._currentNode = nullptr;
-    chatbot._rootNode  = nullptr;
-    chatbot._chatLogic = nullptr;
-}
-
-ChatBot &ChatBot::operator=(ChatBot &chatbot)
-{
-    std::cout << "ChatBot Assigment Operator" << std::endl;
-
-    if (this == &chatbot)
-            return *this;
-
-    _image = std::move(chatbot._image);
-    _currentNode = chatbot._currentNode;
-    _rootNode = chatbot._rootNode;
-    _chatLogic = chatbot._chatLogic;
-    chatbot._currentNode = nullptr;
-    chatbot._rootNode  = nullptr;
-    chatbot._chatLogic = nullptr;
-    return *this;
-}
- 
 ChatBot::ChatBot(ChatBot &&chatbot)
 {
     std::cout << "ChatBot Move Constructor" << std::endl;
@@ -82,6 +45,10 @@ ChatBot::ChatBot(ChatBot &&chatbot)
     _currentNode = chatbot._currentNode;
     _rootNode = chatbot._rootNode;
     _chatLogic = chatbot._chatLogic;
+
+    // upadte chatlogic with the new location of the chatbot
+    _chatLogic->SetChatbotHandle(this);
+
     chatbot._currentNode = nullptr;
     chatbot._rootNode  = nullptr;
     chatbot._chatLogic = nullptr;
@@ -89,7 +56,7 @@ ChatBot::ChatBot(ChatBot &&chatbot)
 
 ChatBot &ChatBot::operator=(ChatBot &&chatbot)
 {
-    std::cout << "ChatBot move copy operator" << std::endl;
+    std::cout << "ChatBot Move Copy Operator" << std::endl;
 
     if (this == &chatbot)
             return *this;
@@ -98,6 +65,10 @@ ChatBot &ChatBot::operator=(ChatBot &&chatbot)
     _currentNode = chatbot._currentNode;
     _rootNode = chatbot._rootNode;
     _chatLogic = chatbot._chatLogic;
+
+    // upadte chatlogic with the new location of the chatbot
+    _chatLogic->SetChatbotHandle(this);
+
     chatbot._currentNode = nullptr;
     chatbot._rootNode  = nullptr;
     chatbot._chatLogic = nullptr;
