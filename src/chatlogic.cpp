@@ -36,10 +36,6 @@ ChatLogic::~ChatLogic()
     // delete all nodes
 
     // delete all edges
-    for (auto it = std::begin(_edges); it != std::end(_edges); ++it)
-    {
-        delete *it;
-    }
 
     // delete chatbot instance
     delete _chatBot;
@@ -148,10 +144,17 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
                     {
                         //// STUDENT CODE
                         ////
-
                         // find tokens for incoming (parent) and outgoing (child) node
-                        auto parentToken = std::find_if(tokens.begin(), tokens.end(), [](const std::pair<std::string, std::string> &pair) { return pair.first == "PARENT"; });
-                        auto childToken = std::find_if(tokens.begin(), tokens.end(), [](const std::pair<std::string, std::string> &pair) { return pair.first == "CHILD"; });
+                        auto parentToken = std::find_if(tokens.begin(),
+                                        tokens.end(), [](const
+                                                std::pair<std::string,
+                                                std::string> &pair) { return
+                                        pair.first == "PARENT"; });
+                        auto childToken = std::find_if(tokens.begin(),
+                                        tokens.end(), [](const
+                                                std::pair<std::string,
+                                                std::string> &pair) { return
+                                        pair.first == "CHILD"; });
 
                         if (parentToken != tokens.end() && childToken != tokens.end())
                         {
@@ -170,19 +173,20 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
                                             std::stoi(childToken->second); });
 
                             // create new edge
-                            GraphEdge *edge = new GraphEdge(id);
+                            std::unique_ptr<GraphEdge> edge = std::make_unique<GraphEdge>(id);
                             edge->SetChildNode( (*childNode).get() );
                             edge->SetParentNode( (*parentNode).get() );
-                            _edges.push_back(edge);
 
                             // find all keywords for current node
                             AddAllTokensToElement("KEYWORD", tokens, *edge);
 
                             // store reference in child node and parent node
-                            (*childNode)->AddEdgeToParentNode(edge);
-                            (*parentNode)->AddEdgeToChildNode(edge);
-                        }
+                            (*childNode)->AddEdgeToChildNode(edge.get());
+                            (*parentNode)->AddEdgeToParentNode(std::move(edge));
 
+                            //(*childNode)->AddEdgeToParentNode(edge);
+                            //(*parentNode)->AddEdgeToChildNode(edge);
+                        }
                         ////
                         //// EOF STUDENT CODE
                     }

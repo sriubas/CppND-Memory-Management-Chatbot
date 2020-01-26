@@ -20,15 +20,19 @@ void GraphNode::AddToken(std::string token)
     _answers.push_back(token);
 }
 
-void GraphNode::AddEdgeToParentNode(GraphEdge *edge)
+//// ADDITIONAL STUDENT CODE
+////
+void GraphNode::AddEdgeToParentNode(std::unique_ptr<GraphEdge> edge)
 {
-    _parentEdges.push_back(edge);
+    _childEdges.emplace_back(std::move(edge));
 }
 
 void GraphNode::AddEdgeToChildNode(GraphEdge *edge)
 {
-    _childEdges.push_back(edge);
+    _parentEdges.push_back(edge);
 }
+////
+//// EOF ADDITIONAL STUDENT CODE
 
 //// STUDENT CODE
 ////
@@ -51,7 +55,7 @@ GraphEdge *GraphNode::GetChildEdgeAtIndex(int index)
     //// STUDENT CODE
     ////
 
-    return _childEdges[index];
+    return _childEdges[index].get();
 
     ////
     //// EOF STUDENT CODE
