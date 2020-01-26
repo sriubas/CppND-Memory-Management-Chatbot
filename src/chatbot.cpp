@@ -12,7 +12,6 @@
 ChatBot::ChatBot()
 {
     // invalidate data handles
-    _image = nullptr;
     _chatLogic = nullptr;
     _rootNode = nullptr;
 }
@@ -27,7 +26,7 @@ ChatBot::ChatBot(std::string filename)
     _rootNode = nullptr;
 
     // load image into heap memory
-    _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
+    _image.reset(new wxBitmap(filename, wxBITMAP_TYPE_PNG));
 }
 
 ChatBot::~ChatBot()
@@ -35,16 +34,76 @@ ChatBot::~ChatBot()
     std::cout << "ChatBot Destructor" << std::endl;
 
     // deallocate heap memory
-    if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
-    {
-        delete _image;
-        _image = NULL;
-    }
+    // if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
+    // {
+    //     delete _image;
+    //     _image = NULL;
+    // }
 }
 
 //// STUDENT CODE
 ////
 
+ChatBot::ChatBot(ChatBot &chatbot)
+{
+    std::cout << "ChatBot Copy Operator" << std::endl;
+
+    _image = std::move(chatbot._image);
+    _currentNode = chatbot._currentNode;
+    _rootNode = chatbot._rootNode;
+    _chatLogic = chatbot._chatLogic;
+    chatbot._currentNode = nullptr;
+    chatbot._rootNode  = nullptr;
+    chatbot._chatLogic = nullptr;
+}
+
+ChatBot &ChatBot::operator=(ChatBot &chatbot)
+{
+    std::cout << "ChatBot Assigment Operator" << std::endl;
+
+    if (this == &chatbot)
+            return *this;
+
+    _image = std::move(chatbot._image);
+    _currentNode = chatbot._currentNode;
+    _rootNode = chatbot._rootNode;
+    _chatLogic = chatbot._chatLogic;
+    chatbot._currentNode = nullptr;
+    chatbot._rootNode  = nullptr;
+    chatbot._chatLogic = nullptr;
+    return *this;
+}
+ 
+ChatBot::ChatBot(ChatBot &&chatbot)
+{
+    std::cout << "ChatBot Move Constructor" << std::endl;
+
+    _image = std::move(chatbot._image);
+    _currentNode = chatbot._currentNode;
+    _rootNode = chatbot._rootNode;
+    _chatLogic = chatbot._chatLogic;
+    chatbot._currentNode = nullptr;
+    chatbot._rootNode  = nullptr;
+    chatbot._chatLogic = nullptr;
+}
+
+ChatBot &ChatBot::operator=(ChatBot &&chatbot)
+{
+    std::cout << "ChatBot move copy operator" << std::endl;
+
+    if (this == &chatbot)
+            return *this;
+
+    _image = std::move(chatbot._image);
+    _currentNode = chatbot._currentNode;
+    _rootNode = chatbot._rootNode;
+    _chatLogic = chatbot._chatLogic;
+    chatbot._currentNode = nullptr;
+    chatbot._rootNode  = nullptr;
+    chatbot._chatLogic = nullptr;
+    return *this;
+}
+ 
 ////
 //// EOF STUDENT CODE
 
