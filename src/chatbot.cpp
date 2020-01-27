@@ -2,6 +2,7 @@
 #include <random>
 #include <algorithm>
 #include <ctime>
+#include <utility>
 
 #include "chatlogic.h"
 #include "graphnode.h"
