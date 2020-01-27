@@ -13,6 +13,7 @@
 ChatBot::ChatBot()
 {
     // invalidate data handles
+    _image = nullptr;
     _chatLogic = nullptr;
     _rootNode = nullptr;
 }
@@ -27,45 +28,63 @@ ChatBot::ChatBot(std::string filename)
     _rootNode = nullptr;
 
     // load image into heap memory
-    _image = std::make_unique<wxBitmap>(filename, wxBITMAP_TYPE_PNG);
+    _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
 }
 
 ChatBot::~ChatBot()
 {
     std::cout << "ChatBot Destructor" << std::endl;
+
+    // deallocate heap memory
+    if(_image != NULL and _image != nullptr) // Attention: wxWidgets used NULL and not nullptr
+    {
+        delete _image;
+        _image = NULL;
+    }
 }
 
 //// STUDENT CODE
 ////
 
-ChatBot::ChatBot(ChatBot &&chatbot)
+ChatBot::ChatBot(ChatBot &chatbot)
 {
-    std::cout << "ChatBot Move Constructor" << std::endl;
+    // This should NEVER be used
+    std::cout << "ChatBot Copy Constructor" << std::endl;
 
-    _image = std::move(chatbot._image);
-    _currentNode = chatbot._currentNode;
+    _image = new wxBitmap();
+    *_image = *chatbot._image;
     _rootNode = chatbot._rootNode;
     _chatLogic = chatbot._chatLogic;
-
-    // upadte chatlogic with the new location of the chatbot
-    _chatLogic->SetChatbotHandle(this);
-
-    chatbot._currentNode = nullptr;
-    chatbot._rootNode  = nullptr;
-    chatbot._chatLogic = nullptr;
+    _currentNode = chatbot._currentNode;
 }
 
-ChatBot &ChatBot::operator=(ChatBot &&chatbot)
+ChatBot &ChatBot::operator=(ChatBot &chatbot)
 {
-    std::cout << "ChatBot Move Copy Operator" << std::endl;
+    // This should NEVER be used
+    std::cout << "ChatBot Assigment Operator" << std::endl;
 
     if (this == &chatbot)
             return *this;
 
-    _image = std::move(chatbot._image);
-    _currentNode = chatbot._currentNode;
+    if (_image != NULL and _image != nullptr)
+            delete _image;
+
+    _image = new wxBitmap();
+    *_image = *chatbot._image;
     _rootNode = chatbot._rootNode;
     _chatLogic = chatbot._chatLogic;
+    _currentNode = chatbot._currentNode;
+    return *this;
+}
+
+ChatBot::ChatBot(ChatBot &&chatbot)
+{
+    std::cout << "ChatBot Move Constructor" << std::endl;
+
+    _image = chatbot._image;
+    _rootNode = chatbot._rootNode;
+    _chatLogic = chatbot._chatLogic;
+    // _currentNode will always be set after moving
 
     // upadte chatlogic with the new location of the chatbot
     _chatLogic->SetChatbotHandle(this);
@@ -73,6 +92,32 @@ ChatBot &ChatBot::operator=(ChatBot &&chatbot)
     chatbot._currentNode = nullptr;
     chatbot._rootNode  = nullptr;
     chatbot._chatLogic = nullptr;
+    chatbot._image = nullptr;
+}
+
+ChatBot &ChatBot::operator=(ChatBot &&chatbot)
+{
+    std::cout << "ChatBot Move Assigment Operator" << std::endl;
+
+    if (this == &chatbot)
+            return *this;
+
+    if (_image != NULL and _image != nullptr)
+            delete _image;
+
+    _image = chatbot._image;
+    _rootNode = chatbot._rootNode;
+    _chatLogic = chatbot._chatLogic;
+    // _currentNode will always be set after moving
+
+    // upadte chatlogic with the new location of the chatbot
+    _chatLogic->SetChatbotHandle(this);
+
+    chatbot._currentNode = nullptr;
+    chatbot._rootNode  = nullptr;
+    chatbot._chatLogic = nullptr;
+    chatbot._image = nullptr;
+
     return *this;
 }
  
